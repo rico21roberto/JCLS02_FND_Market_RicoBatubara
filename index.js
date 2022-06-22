@@ -326,8 +326,80 @@ for(let i =0;i<check2.length;i++){
 }
 printProduct()
 printCartlist()
-//1.mengetahui apakah product tersebut dipilih
-//2.
+//1.mengetahui apakah product tersebut dipilih -- getElementById
+//2.mengakses setiap data product cart satu persatu -- looping
+//3. jika checkbox dari product bernilai true,ambil index datanya -- if
+//4.ambil qty data product berdasarkan index, kemudian reassign ke stok produk -- +=
+//5.hapus data product pada cart berdasarkan index yang didapatkan -- splice
+//6.jika checkbox bernilai false, maka tidak dirubah
+//7.refresh tampilan product dan cart
+}
+let checklist = []
+const handleCheck =() =>{
+ 
+let check1 = document.getElementById("cartForm")
+let check2 = check1.getElementsByTagName("input")
+
+for(let i =0;i<check2.length;i++){
+    if(check2[i].checked){
+        let index = cart.findIndex((val) => val.sku == check2[i].value)
+        let sku = cart[index].sku
+        let img = cart[index].img 
+        let name = cart[index].name
+        let price = cart[index].price
+        let qty = cart[index].qty
+        let sub = cart[index].subtotal
+        checklist.push(new Cart(sku,img,name,price,qty,sub))
+        
+        cart.splice(index,1)
+    }
+}
+console.table(checklist)
+printProduct()
+printCartlist()
+printCheckout()
 }
 
+const printCheckout = () =>{
+    let total = 0
+    for(let t =0;t<checklist.length;t++){
+        total = parseInt(total + checklist[t].subtotal)
+    }
+    let html = checklist.map((val,idx)=>{
+        return `<tr>
+        <td>${val.sku}</td>
+        <td>IDR.${val.subtotal.toLocaleString('id')}</td>
+      
+    </tr>` 
+    })
+    document.getElementById("subtotal").innerHTML = `Rp. ${total.toLocaleString('id')}`
+    document.getElementById("checkoutlist").innerHTML = html.join('')
+}
+
+const payment = () =>{
+let bayar = document.getElementById("checkout")
+let uang = bayar.elements["bayar"].value
+
+let yangHarusbayar = 0
+for(let t =0;t<checklist.length;t++){
+    yangHarusbayar = parseInt(yangHarusbayar + checklist[t].subtotal)
+}
+let total = uang - yangHarusbayar
+if(uang ==''){
+    alert('Silahkan input uang terlebih dahulu')
+   // document.getElementById("alert").innerHTML = "Silahkan input uang terlebih dahulu"
+
+}else if(uang < yangHarusbayar){
+    document.getElementById("alert").innerHTML = "Uang yang diinput kurang"
+}else{
+    alert(`Transaksi berhasil, kembalian : ${total}`)
+checklist.splice(0,checklist.length)
+bayar.elements["bayar"].value = null
+document.getElementById("alert").innerHTML = ""
+}
+console.table(checklist)
+printProduct()
+printCartlist()
+printCheckout()
+}
 printProduct();
