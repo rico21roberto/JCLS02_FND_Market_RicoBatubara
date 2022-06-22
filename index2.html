@@ -36,6 +36,15 @@
             </form>
             <button type="button" onclick="handleSubmit()">Submit Product</button>
         </fieldset>
+
+        <fieldset>
+            <legend>Login Customer</legend>
+            <form id="login">
+                <input type="text" id="login" placeholder="Customer Name">
+                <button type="button" id="btnLogin" onclick="loginUser()">Login</button>
+            </form>
+        </fieldset>
+        
         <fieldset>
             <legend>Filter Data</legend>
             <form id="filter">
@@ -71,8 +80,8 @@
         </table>
         <fieldset>
             <legend>Cart List</legend>
-            <button type="button" onclick="handleDelCart()">Delete Selected</button>
-            <button type="button" onclick="handleCheck()">Checkout Selected</button>
+            <button type="button" onclick="handleDelCart()" id="btndel" disabled>Delete Selected</button>
+            <button type="button" onclick="handleCheck()" id="btncheck" disabled>Checkout Selected</button>
             <form id="cartForm">
                 <table>
                     <thead>
@@ -112,12 +121,28 @@
                 <table>
 
                     <tr><th>Total Pembayaran</th><th id="subtotal"></th></tr>
-                    <tr><th>Uang Pembayaran</th><th><input type="number" placeholder="Bayar" id="bayar"><button type="button" onclick="payment()">payment</button></th></tr>
+                    <tr><th>Uang Pembayaran</th><th><input type="number" placeholder="Bayar" id="bayar"><button type="button" onclick="payment()" id="pay" disabled>payment</button></th></tr>
 
                 </table>
             </form>
         </fieldset>
         <h2 id="alert"></h2>
+        <fieldset>
+            <legend>Report Transaction</legend>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Total Transaction</th>
+                    </tr>
+                </thead>
+                <tbody id="userlist">
+                </tbody>
+            </table>
+            <h2 id="omset">Omset </h2>
+        </fieldset>
     </div>
 </body>
 <script src="index.js"></script>

@@ -23,6 +23,13 @@ class Cart extends Product {
     }    
 
 }
+class dbReport {
+    constructor(_dateUser,_user,_total) {
+        this.dateUser = _dateUser;
+        this.user = _user;
+        this.total = _total
+    }
+}
 
 
 let dbProduct = [
@@ -93,11 +100,11 @@ const printProduct = (data = dbProduct,sku) => {
         <td>${val.name}</td>
         <td>${val.category}</td>
         <td>${val.stock.toLocaleString()}</td>
-        <td>IDR. ${val.price.toLocaleString('id')}</td>
+        <td>Rp. ${val.price.toLocaleString('id')}</td>
         <td>${val.expDate ? val.expDate : "-"}</td>
         <td><button  type="button" onclick="handleEdit('${val.sku}')">Edit</button>
             <button type="button" onclick="handleDelete('${val.sku}')">Delete</button>
-            <button type="button" onclick="handleBeli('${val.sku}')">Beli</button>
+            <button type="button" id="beli" onclick="handleBeli('${val.sku}')" disabled>Beli</button>
         </td>
     </tr>`
 
@@ -105,7 +112,24 @@ const printProduct = (data = dbProduct,sku) => {
        }
     }).join("");
 }
-
+const print2 = ()=>{
+    document.getElementById("display").innerHTML = dbProduct.map((val, idx) => {
+        return `<tr>
+        <td>${idx + 1}</td>
+        <td id="sku">${val.sku}</td>
+        <td><img src="${val.img}" width="75px"></td>
+        <td>${val.name}</td>
+        <td>${val.category}</td>
+        <td>${val.stock.toLocaleString()}</td>
+        <td>Rp. ${val.price.toLocaleString('id')}</td>
+        <td>${val.expDate ? val.expDate : "-"}</td>
+        <td><button  type="button" onclick="handleEdit('${val.sku}')">Edit</button>
+            <button type="button" onclick="handleDelete('${val.sku}')">Delete</button>
+            <button type="button" id="beli" onclick="handleBeli('${val.sku}')">Beli</button>
+        </td>
+    </tr>`
+    }).join("");
+}
 const handleDate = () => {
     console.log(document.getElementById("category").value)
     console.log(document.getElementById("expDate"))
@@ -231,12 +255,13 @@ const handleBeli = (sku) =>{
         
         console.table(cart)
      
-      
+    document.getElementById("btncheck").disabled = false
+    document.getElementById("btndel").disabled = false
 
     console.log(sku)
     printCartlist()
     
-    printProduct()
+    print2()
    
     }
 const printCartlist = () =>{
@@ -248,7 +273,7 @@ const printCartlist = () =>{
         <td>${val.name}</td>
         <td>${val.price.toLocaleString('id')}</td>
         <td><button type="button" onclick="decre('${val.sku}')">-</button>${val.qty}<button type="button" onclick="incre('${val.sku}')">+</button></td>
-        <td>IDR.${val.subtotal.toLocaleString('id')}</td>
+        <td>Rp.${val.subtotal.toLocaleString('id')}</td>
         <td>
             <button type="button" onclick="handleDelete2('${val.sku}')">Delete</button>
         </td>
@@ -289,7 +314,7 @@ const incre = (sku) =>{
         dbProduct[index2].stock -= 1
         cart[index].subtotal = cart[index].qty * cart[index].price
     }
-    printProduct()
+    print2()
     printCartlist()
 }
 const decre = (sku) =>{
@@ -304,7 +329,7 @@ const decre = (sku) =>{
         dbProduct[index2].stock += 1
         cart[index].subtotal = cart[index].qty * cart[index].price
     }
-    printProduct()
+    print2()
     printCartlist()
 }
 
@@ -321,10 +346,12 @@ for(let i =0;i<check2.length;i++){
         let index2 = dbProduct.findIndex((val)=> val.sku == check2[i].value)
         dbProduct[index2].stock += cart[index].qty
         cart.splice(index,1)
+    }else {
+        alert("belum ada data yang dipilih")
     }
 }
 }
-printProduct()
+print2()
 printCartlist()
 //1.mengetahui apakah product tersebut dipilih -- getElementById
 //2.mengakses setiap data product cart satu persatu -- looping
@@ -339,6 +366,7 @@ const handleCheck =() =>{
  
 let check1 = document.getElementById("cartForm")
 let check2 = check1.getElementsByTagName("input")
+let btnpay = document.getElementById("checkout")
 
 for(let i =0;i<check2.length;i++){
     if(check2[i].checked){
@@ -350,12 +378,14 @@ for(let i =0;i<check2.length;i++){
         let qty = cart[index].qty
         let sub = cart[index].subtotal
         checklist.push(new Cart(sku,img,name,price,qty,sub))
-        
         cart.splice(index,1)
-    }
+        btnpay.elements["pay"].disabled = false
+    } 
+
 }
+
 console.table(checklist)
-printProduct()
+print2()
 printCartlist()
 printCheckout()
 }
@@ -368,38 +398,81 @@ const printCheckout = () =>{
     let html = checklist.map((val,idx)=>{
         return `<tr>
         <td>${val.sku}</td>
-        <td>IDR.${val.subtotal.toLocaleString('id')}</td>
-      
+        <td>Rp.${val.subtotal.toLocaleString('id')}</td>
     </tr>` 
     })
     document.getElementById("subtotal").innerHTML = `Rp. ${total.toLocaleString('id')}`
     document.getElementById("checkoutlist").innerHTML = html.join('')
 }
+let dbUser = []
+let arrbulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
 
 const payment = () =>{
 let bayar = document.getElementById("checkout")
 let uang = bayar.elements["bayar"].value
-
+let loginData = document.getElementById("login")
+let user = loginData.elements["login"].value
+let tgl = new Date()
+let detik = tgl.getSeconds()
+let menit = tgl.getMinutes()
+let jam = tgl.getHours()
+let tanggal = tgl.getDate()
+let bulan = tgl.getMonth()
+let tahun = tgl.getFullYear()
+let dateUser = (tanggal+"-"+arrbulan[bulan]+"-"+tahun+" , "+jam+":"+menit+":"+detik)
 let yangHarusbayar = 0
+let omset = 0
 for(let t =0;t<checklist.length;t++){
     yangHarusbayar = parseInt(yangHarusbayar + checklist[t].subtotal)
 }
 let total = uang - yangHarusbayar
 if(uang ==''){
     alert('Silahkan input uang terlebih dahulu')
-   // document.getElementById("alert").innerHTML = "Silahkan input uang terlebih dahulu"
-
 }else if(uang < yangHarusbayar){
     document.getElementById("alert").innerHTML = "Uang yang diinput kurang"
 }else{
     alert(`Transaksi berhasil, kembalian : ${total}`)
 checklist.splice(0,checklist.length)
 bayar.elements["bayar"].value = null
+loginData.elements["login"].value = null
+loginData.elements["btnLogin"].disabled = false
 document.getElementById("alert").innerHTML = ""
+let totalAkhir = yangHarusbayar
+dbUser.push(new dbReport(dateUser,user,totalAkhir))
+bayar.elements["pay"].disabled = true
+document.getElementById("btncheck").disabled = true
+document.getElementById("btndel").disabled = true
+for(let i =0;i<dbUser.length;i++){
+    omset = parseInt(omset + dbUser[i].total)
 }
-console.table(checklist)
+document.getElementById("omset").innerHTML = `Omset Hari ini Rp. ${omset}`
+}
+console.table(dbUser)
+printUser()
 printProduct()
 printCartlist()
 printCheckout()
+
+
+}
+
+const loginUser = () => {
+    let loginData = document.getElementById("login")
+    let userName = loginData.elements["login"].value
+    loginData.elements["btnLogin"].disabled = true
+    console.log(userName)
+ 
+  print2()
+}
+
+const printUser = ()=>{
+    document.getElementById("userlist").innerHTML = dbUser.map((val, idx) => {
+        return `<tr>
+        <td>${idx + 1}</td>
+        <td>${val.dateUser}</td>
+        <td>${val.user}</td>
+        <td>Rp. ${val.total.toLocaleString('id')}</td>
+    </tr>`
+    }).join("");
 }
 printProduct();
