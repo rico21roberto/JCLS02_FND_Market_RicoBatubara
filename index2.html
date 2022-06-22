@@ -46,7 +46,7 @@
                     <option value="General">General</option>
                     <option value="FnB">FnB</option>
                 </select>
-                <input type="number" id="price" placeholder="Price">
+                <input type="number" id="price" placeholder="Price" >
                 <button type="button" onclick="handleFilter()">Search</button>
                 <button type="button" onclick="handleReset()">Reset</button>
             </form>
@@ -69,6 +69,55 @@
 
             </tbody>
         </table>
+        <fieldset>
+            <legend>Cart List</legend>
+            <button type="button" onclick="handleDelCart()">Delete Selected</button>
+            <button type="button" onclick="handleCheck()">Checkout Selected</button>
+            <form id="cartForm">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>SKU</th>
+                            <th>Preview</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Sub.Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartlist">
+
+                        
+                    </tbody>
+                </table>
+            </form>
+        </fieldset>
+      
+        <fieldset>
+            <legend>Checkout</legend>
+            <form id="checkout">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Sub.Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkoutlist">
+
+                    </tbody>
+                </table>
+                <table>
+
+                    <tr><th>Total Pembayaran</th><th id="subtotal"></th></tr>
+                    <tr><th>Uang Pembayaran</th><th><input type="number" placeholder="Bayar" id="bayar"><button type="button" onclick="payment()">payment</button></th></tr>
+
+                </table>
+            </form>
+        </fieldset>
+        <h2 id="alert"></h2>
     </div>
 </body>
 <script src="index.js"></script>
