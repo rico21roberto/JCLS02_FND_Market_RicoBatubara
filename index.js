@@ -15,6 +15,14 @@ class FnB extends Product {
         this.expDate = _expDate;
     }
 }
+class Cart extends Product {
+    constructor(_sku,_name,_img,_price,_qty,_subtotal){
+    super(_sku,_name,_img, null,null,_price)
+        this.qty = _qty
+        this.subtotal = _price * _qty
+    }    
+
+}
 
 
 let dbProduct = [
@@ -80,7 +88,7 @@ const printProduct = (data = dbProduct,sku) => {
        }else {
         return `<tr>
         <td>${idx + 1}</td>
-        <td>${val.sku}</td>
+        <td id="sku">${val.sku}</td>
         <td><img src="${val.img}" width="75px"></td>
         <td>${val.name}</td>
         <td>${val.category}</td>
@@ -89,6 +97,7 @@ const printProduct = (data = dbProduct,sku) => {
         <td>${val.expDate ? val.expDate : "-"}</td>
         <td><button  type="button" onclick="handleEdit('${val.sku}')">Edit</button>
             <button type="button" onclick="handleDelete('${val.sku}')">Delete</button>
+            <button type="button" onclick="handleBeli('${val.sku}')">Beli</button>
         </td>
     </tr>`
 
@@ -186,9 +195,139 @@ const handleSave = (sku) =>{
     dbProduct[index].name = name1
     dbProduct[index].stock = stock
     dbProduct[index].price = price
+    //dbProduct[index] = {...dbProduct[index],name1,stock,price}
     printProduct()
 }
 const handleCancel = () =>{
     printProduct();
 }
+let cart = []
+const handleBeli = (sku) =>{
+   
+    let index = dbProduct.findIndex((val) => val.sku == sku);
+    
+    let sku2 = dbProduct[index].sku
+    let name2 = dbProduct[index].name
+    let img2 = dbProduct[index].img
+   // let category2 = dbProduct[index].category
+    let qty = 1
+    let price2 = dbProduct[index].price
+   // let exp2 = dbProduct[index].expDate
+    
+    let index2 = cart.findIndex((val)=> val.sku == sku)
+    if(dbProduct[index].stock == 0){
+        alert('stok habis')
+        
+    }else if(index2 >= 0){
+        
+        cart[index2].qty += 1
+    
+        dbProduct[index].stock -= 1
+        cart[index2].subtotal = parseInt(cart[index2].qty * cart[index2].price)
+    }else{      
+        cart.push(new Cart(sku2,name2,img2,price2,qty))
+        dbProduct[index].stock -= 1 
+    }
+        
+        console.table(cart)
+     
+      
+
+    console.log(sku)
+    printCartlist()
+    
+    printProduct()
+   
+    }
+const printCartlist = () =>{
+    let html = cart.map((val,idx)=>{
+        return `<tr>
+        <td><input type="checkbox" id="select[${idx}]" value="${val.sku}" ></td>
+        <td id="sku">${val.sku}</td>
+        <td><img src="${val.img}" width="75px"></td>
+        <td>${val.name}</td>
+        <td>${val.price.toLocaleString('id')}</td>
+        <td><button type="button" onclick="decre('${val.sku}')">-</button>${val.qty}<button type="button" onclick="incre('${val.sku}')">+</button></td>
+        <td>IDR.${val.subtotal.toLocaleString('id')}</td>
+        <td>
+            <button type="button" onclick="handleDelete2('${val.sku}')">Delete</button>
+        </td>
+    </tr>`
+    
+    })
+ 
+    document.getElementById("cartlist").innerHTML = html.join('')
+}
+
+const handleDelete2 = (sku) => {
+    // Cara 1
+    // let index = 0;
+    // console.log(sku)
+    // dbProduct.forEach((val, idx) => {
+    //     if (val.sku == sku) {
+    //         index = idx
+    //     }
+    // })
+
+    // Cara 2
+    let index = cart.findIndex((val) => val.sku == sku); // output : number
+    let index2 = dbProduct.findIndex((val)=> val.sku == sku)
+    dbProduct[index2].stock += cart[index].qty
+    
+    cart.splice(index, 1);
+
+    printProduct()
+    printCartlist()
+}
+const incre = (sku) =>{
+    let index = cart.findIndex((val) => val.sku == sku)
+    let index2 = dbProduct.findIndex((val)=> val.sku == sku)
+    if(dbProduct[index2].stock == 0){
+        alert("stok habis")
+    }else{
+        cart[index].qty += 1
+        dbProduct[index2].stock -= 1
+        cart[index].subtotal = cart[index].qty * cart[index].price
+    }
+    printProduct()
+    printCartlist()
+}
+const decre = (sku) =>{
+    let index = cart.findIndex((val) => val.sku == sku)
+    let index2 = dbProduct.findIndex((val)=> val.sku == sku)
+    if(cart[index].qty == 1){
+        cart.splice(index,1)
+        dbProduct[index2].stock += 1
+        
+    }else{
+        cart[index].qty -= 1
+        dbProduct[index2].stock += 1
+        cart[index].subtotal = cart[index].qty * cart[index].price
+    }
+    printProduct()
+    printCartlist()
+}
+
+const handleDelCart=()=>{
+let check1 = document.getElementById("cartForm")
+let check2 = check1.getElementsByTagName("input")
+konfir = true
+  
+konfir = confirm("yakin dihapus")
+if(konfir){
+for(let i =0;i<check2.length;i++){
+    if(check2[i].checked){
+        let index = cart.findIndex((val) => val.sku == check2[i].value)
+        let index2 = dbProduct.findIndex((val)=> val.sku == check2[i].value)
+        dbProduct[index2].stock += cart[index].qty
+        cart.splice(index,1)
+    }
+}
+}
+printProduct()
+printCartlist()
+//1.mengetahui apakah product tersebut dipilih
+//2.
+}
+
 printProduct();
