@@ -432,6 +432,7 @@ if(uang ==''){
     document.getElementById("alert").innerHTML = "Uang yang diinput kurang"
 }else{
     alert(`Transaksi berhasil, kembalian : ${total}`)
+ cart.splice(0,cart.length)   
 checklist.splice(0,checklist.length)
 bayar.elements["bayar"].value = null
 loginData.elements["login"].value = null
