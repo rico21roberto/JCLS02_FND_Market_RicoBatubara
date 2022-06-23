@@ -31,7 +31,7 @@ class dbReport {
     }
 }
 
-
+let userLogin = '';
 let dbProduct = [
     new Product("SKU-01-123456", "Topi", "https://cdn1-production-images-kly.akamaized.net/wRIF7UgcnVNjJOh-vVZwOtxTgdk=/1200x900/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/2754021/original/029823500_1552891993-foto_HL_topi.jpg", "General", 20, 35000),
     new FnB("SKU-02-654321", "Telur", "https://asset.kompas.com/crops/WYVtX9H9wYlXZDwLmMqHiw2ZJc4=/0x7:740x500/750x500/data/photo/2020/11/13/5fae4aae98da3.jpg", "FnB", 20, 35000, "2022-06-20"),
@@ -104,7 +104,7 @@ const printProduct = (data = dbProduct,sku) => {
         <td>${val.expDate ? val.expDate : "-"}</td>
         <td><button  type="button" onclick="handleEdit('${val.sku}')">Edit</button>
             <button type="button" onclick="handleDelete('${val.sku}')">Delete</button>
-            <button type="button" id="beli" onclick="handleBeli('${val.sku}')" disabled>Beli</button>
+            <button type="button" id="beli" onclick="handleBeli('${val.sku}')">Beli</button>
         </td>
     </tr>`
 
@@ -112,24 +112,7 @@ const printProduct = (data = dbProduct,sku) => {
        }
     }).join("");
 }
-const print2 = ()=>{
-    document.getElementById("display").innerHTML = dbProduct.map((val, idx) => {
-        return `<tr>
-        <td>${idx + 1}</td>
-        <td id="sku">${val.sku}</td>
-        <td><img src="${val.img}" width="75px"></td>
-        <td>${val.name}</td>
-        <td>${val.category}</td>
-        <td>${val.stock.toLocaleString()}</td>
-        <td>Rp. ${val.price.toLocaleString('id')}</td>
-        <td>${val.expDate ? val.expDate : "-"}</td>
-        <td><button  type="button" onclick="handleEdit('${val.sku}')">Edit</button>
-            <button type="button" onclick="handleDelete('${val.sku}')">Delete</button>
-            <button type="button" id="beli" onclick="handleBeli('${val.sku}')">Beli</button>
-        </td>
-    </tr>`
-    }).join("");
-}
+
 const handleDate = () => {
     console.log(document.getElementById("category").value)
     console.log(document.getElementById("expDate"))
@@ -227,17 +210,13 @@ const handleCancel = () =>{
 }
 let cart = []
 const handleBeli = (sku) =>{
-   
+   if(userLogin){
     let index = dbProduct.findIndex((val) => val.sku == sku);
-    
     let sku2 = dbProduct[index].sku
     let name2 = dbProduct[index].name
-    let img2 = dbProduct[index].img
-   // let category2 = dbProduct[index].category
+    let img2 = dbProduct[index].img   
     let qty = 1
     let price2 = dbProduct[index].price
-   // let exp2 = dbProduct[index].expDate
-    
     let index2 = cart.findIndex((val)=> val.sku == sku)
     if(dbProduct[index].stock == 0){
         alert('stok habis')
@@ -261,8 +240,8 @@ const handleBeli = (sku) =>{
     console.log(sku)
     printCartlist()
     
-    print2()
-   
+    printProduct()
+    }else{alert('Silahkan isi user login')}
     }
 const printCartlist = () =>{
     let html = cart.map((val,idx)=>{
@@ -314,7 +293,7 @@ const incre = (sku) =>{
         dbProduct[index2].stock -= 1
         cart[index].subtotal = cart[index].qty * cart[index].price
     }
-    print2()
+    printProduct()
     printCartlist()
 }
 const decre = (sku) =>{
@@ -329,7 +308,7 @@ const decre = (sku) =>{
         dbProduct[index2].stock += 1
         cart[index].subtotal = cart[index].qty * cart[index].price
     }
-    print2()
+    printProduct()
     printCartlist()
 }
 
@@ -351,7 +330,7 @@ for(let i =0;i<check2.length;i++){
     }
 }
 }
-print2()
+printProduct()
 printCartlist()
 //1.mengetahui apakah product tersebut dipilih -- getElementById
 //2.mengakses setiap data product cart satu persatu -- looping
@@ -385,7 +364,7 @@ for(let i =0;i<check2.length;i++){
 }
 
 console.table(checklist)
-print2()
+printProduct()
 printCartlist()
 printCheckout()
 }
@@ -443,6 +422,7 @@ dbUser.push(new dbReport(dateUser,user,totalAkhir))
 bayar.elements["pay"].disabled = true
 document.getElementById("btncheck").disabled = true
 document.getElementById("btndel").disabled = true
+userLogin = ''
 for(let i =0;i<dbUser.length;i++){
     omset = parseInt(omset + dbUser[i].total)
 }
@@ -453,17 +433,14 @@ printUser()
 printProduct()
 printCartlist()
 printCheckout()
-
-
 }
 
 const loginUser = () => {
     let loginData = document.getElementById("login")
     let userName = loginData.elements["login"].value
+    userLogin = userName
     loginData.elements["btnLogin"].disabled = true
     console.log(userName)
- 
-  print2()
 }
 
 const printUser = ()=>{
